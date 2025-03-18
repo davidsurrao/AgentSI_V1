@@ -1,0 +1,5 @@
+flask
+langchain
+chromadb
+huggingface_hub
+openai
