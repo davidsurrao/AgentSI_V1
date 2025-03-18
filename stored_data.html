@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stored Data</title>
+</head>
+<body>
+    <h1>Stored Data</h1>
+    <table border="1">
+        <tr>
+            <th>Text</th>
+            <th>Metadata</th>
+        </tr>
+        {% for item in data %}
+        <tr>
+            <td>{{ item.text }}</td>
+            <td>{{ item.metadata }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
