@@ -1,7 +1,12 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from models import store_text, query_text
 
 routes = Blueprint("routes", __name__)
+
+# ✅ New Homepage Route (Fix for 404 Error)
+@routes.route("/")
+def home():
+    return render_template("index.html")
 
 @routes.route("/store", methods=["POST"])
 def store():
