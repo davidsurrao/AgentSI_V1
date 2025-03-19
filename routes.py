@@ -4,10 +4,10 @@ from models import store_text, query_text
 
 routes = Blueprint("routes", __name__)
 
-# ✅ Force Flask to Serve Static Files
+# ✅ Fix Static File Path (Serve from `app/static/`)
 @routes.route("/static/<path:filename>")
 def static_files(filename):
-    return send_from_directory(os.path.abspath("app/static"), filename)
+    return send_from_directory("app/static", filename)
 
 # ✅ Homepage Route
 @routes.route("/")
