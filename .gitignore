@@ -1,5 +1,20 @@
-# Ignore all .gguf files in models folder
+# Ignore all model files
 models/*.gguf
 
-# Ignore everything in the uploads folder
+# Ignore uploads and user-submitted content
 uploads/
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+
+# Ignore ChromaDB files (runtime-generated vector store)
+chroma_db/
+
+# Ignore local test scripts (optional, if only for local dev)
+test_llm_only.py
+
+# Ignore VSCode settings and other common editor config
+.vscode/
+.idea/
+.DS_Store
