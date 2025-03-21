@@ -1,0 +1,5 @@
+# Ignore all .gguf files in models folder
+models/*.gguf
+
+# Ignore everything in the uploads folder
+uploads/
