@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, send_from_directory, redirect, url_for, flash
 import os
 import json
+import requests
+import time
 from werkzeug.utils import secure_filename
 from models import store_text, query_text, get_active_model
 from utils.ocr import extract_text
@@ -144,22 +146,53 @@ def query():
 
     return render_template("query_results.html", results=results, error=error, active_model=active_model)
 
+# --- Query All LLMs ---
+@routes.route("/query_all_llms", methods=["GET", "POST"])
+def query_all_llms():
+    responses = {}
+    query_text_value = ""
+    config = load_config()
+    model_entries = config.get("models", [])
+    active_model = config.get("active_model")
+
+    if request.method == "POST":
+        query_text_value = request.form.get("query", "").strip()
+
+        for model in model_entries:
+            model_path = model.get("path")
+            port = model.get("port")
+            model_name = os.path.basename(model_path)
+
+            if not model_path or not port:
+                responses[model_name] = "⚠️ Invalid model entry."
+                continue
+
+            try:
+                start_time = time.time()
+                res = requests.post(f"http://localhost:{port}/v1/completions", json={
+                    "prompt": query_text_value,
+                    "max_tokens": 300,
+                    "temperature": 0.7
+                })
+                elapsed = time.time() - start_time
+                text = res.json().get("choices", [{}])[0].get("text", "No response")
+                responses[model_name] = f"{text}\n\n⏱ Time: {elapsed:.2f} sec"
+            except Exception as e:
+                responses[model_name] = f"Error: {str(e)}"
+
+    return render_template("query_all_llms.html", query=query_text_value, responses=responses)
+
 # --- Change Model ---
 @routes.route("/change_model", methods=["GET", "POST"])
 def change_model():
-    models = [
-        "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\mistral-7b-instruct-v0.2.Q4_K_M.gguf",
-        "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\DeepSeek-R1-Distill-Qwen-7B-Q8_0.gguf",
-        "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\llama-2-7b.Q6_K.gguf",
-        "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\qwen2.5-coder-32b-instruct-q8_0.gguf"
-    ]
+    config = load_config()
+    models = config.get("models", [])
     message = None
     current_active = get_active_model()
 
     if request.method == "POST":
         selected_model = request.form.get("model")
-        if selected_model in models:
-            config = load_config()
+        if any(m["path"] == selected_model for m in models):
             config["active_model"] = selected_model
             save_config(config)
             message = "Model changed successfully!"
@@ -167,11 +200,14 @@ def change_model():
 
     return render_template("change_model.html", models=models, message=message, active_model=current_active)
 
-# --- Admin Page ---
+# --- Admin Page (Dropdowns + Performance) ---
 @routes.route("/admin", methods=["GET"])
 def admin():
     config = load_config()
-    return render_template("admin.html", categories=config.get("categories", {}), projects=config.get("projects", []))
+    return render_template("admin.html",
+                           categories=config.get("categories", {}),
+                           projects=config.get("projects", []),
+                           models=config.get("models", []))
 
 @routes.route("/add_dropdown_value", methods=["POST"])
 def add_dropdown_value():
@@ -231,3 +267,27 @@ def delete_dropdown_value():
             flash(f"{value_to_remove} not found in projects.", "danger")
 
     return redirect(url_for('routes.admin'))
+
+# --- Save Model Settings ---
+@routes.route("/save_model_settings", methods=["POST"])
+def save_model_settings():
+    config = load_config()
+    updated_models = []
+
+    for i, model in enumerate(config.get("models", [])):
+        prefix = f"model_{i}_"
+        updated_model = {
+            "path": model.get("path"),
+            "port": model.get("port"),
+            "settings": {
+                "n_gpu_layers": int(request.form.get(prefix + "n_gpu_layers", -1)),
+                "n_ctx": int(request.form.get(prefix + "n_ctx", 2048)),
+                "n_threads": int(request.form.get(prefix + "n_threads", 8))
+            }
+        }
+        updated_models.append(updated_model)
+
+    config["models"] = updated_models
+    save_config(config)
+    flash("Model performance settings saved.", "success")
+    return redirect(url_for("routes.admin"))

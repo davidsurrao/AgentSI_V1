@@ -5,7 +5,7 @@
             "requirements",
             "process",
             "notes",
-            "other"
+            "Other"
         ],
         "image": [
             "diagrams",
@@ -25,5 +25,52 @@
         "All",
         "IMMS BC "
     ],
-    "active_model": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+    "active_model": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\mistral-7b-instruct-v0.2.Q4_K_M.gguf",
+    "models": [
+        {
+            "path": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\mistral-7b-instruct-v0.2.Q4_K_M.gguf",
+            "port": 5000,
+            "settings": {
+                "n_gpu_layers": -1,
+                "n_ctx": 4096,
+                "n_threads": 12
+            }
+        },
+        {
+            "path": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\DeepSeek-R1-Distill-Qwen-7B-Q8_0.gguf",
+            "port": 5001,
+            "settings": {
+                "n_gpu_layers": -1,
+                "n_ctx": 4096,
+                "n_threads": 12
+            }
+        },
+        {
+            "path": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\llama-2-7b.Q6_K.gguf",
+            "port": 5002,
+            "settings": {
+                "n_gpu_layers": -1,
+                "n_ctx": 4096,
+                "n_threads": 12
+            }
+        },
+        {
+            "path": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\qwen2.5-coder-32b-instruct-q8_0.gguf",
+            "port": 5003,
+            "settings": {
+                "n_gpu_layers": -1,
+                "n_ctx": 4096,
+                "n_threads": 12
+            }
+        },
+        {
+            "path": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\tiiuae-falcon-40b-instruct-Q6_K.gguf",
+            "port": 5004,
+            "settings": {
+                "n_gpu_layers": -1,
+                "n_ctx": 4096,
+                "n_threads": 12
+            }
+        }
+    ]
 }

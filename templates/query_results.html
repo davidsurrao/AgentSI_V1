@@ -27,6 +27,7 @@
                             >{{ request.form.query if request.form.query else '' }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary mt-3">Search</button>
+                        <button type="button" class="btn btn-secondary mt-3 ms-2" onclick="clearQuery()">Clear</button>
                     </form>
                 </div>
             </div>
@@ -40,27 +41,30 @@
             {% endif %}
 
             <!-- Display Results -->
-            {% if results %}
-                <div class="card">
-                    <div class="card-header">Results</div>
-                    <div
-                        class="card-body"
-                        style="
-                            height: 600px;
-                            overflow-y: auto;
-                            white-space: pre-wrap;
-                        "
-                    >
-                        <ul class="list-group list-group-flush">
-                            {% for result in results %}
-                                <li class="list-group-item">
-                                    {{ result }}
-                                </li>
-                            {% endfor %}
-                        </ul>
+            <div id="resultsContainer">
+                {% if results %}
+                    <div class="card">
+                        <div class="card-header">Results</div>
+                        <div
+                            class="card-body"
+                            style="
+                                height: 600px;
+                                overflow-y: auto;
+                                overflow-x: hidden;
+                                white-space: pre-wrap;
+                            "
+                        >
+                            <ul class="list-group list-group-flush">
+                                {% for result in results %}
+                                    <li class="list-group-item">
+                                        {{ result }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -71,4 +75,11 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+function clearQuery() {
+    document.getElementById("queryInput").value = "";
+    document.getElementById("resultsContainer").innerHTML = "";
+}
+</script>
 {% endblock %}

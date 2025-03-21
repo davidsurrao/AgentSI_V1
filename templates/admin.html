@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Admin - Manage Dropdowns{% endblock %}
+{% block title %}Admin - Manage Settings{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Admin: Manage Dropdown Lists</h1>
+    <h1 class="mb-4">Admin: Manage Settings</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
@@ -12,79 +12,63 @@
         {% endfor %}
     {% endwith %}
 
-    <div class="row">
-        <!-- Category Management -->
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-light fw-bold">Categories by Type</div>
-                <div class="card-body">
-                    {% for type, cat_list in categories.items() %}
-                        <h6 class="text-muted">{{ type|capitalize }} Categories</h6>
-                        <ul class="list-group mb-3">
-                            {% for cat in cat_list %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ cat }}
-                                    <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}" class="m-0 p-0">
-                                        <input type="hidden" name="list_type" value="categories">
-                                        <input type="hidden" name="category_type" value="{{ type }}">
-                                        <input type="hidden" name="value_to_remove" value="{{ cat }}">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </form>
-                                </li>
-                            {% else %}
-                                <li class="list-group-item text-muted">No categories found.</li>
-                            {% endfor %}
-                        </ul>
-                    {% endfor %}
+    <!-- Nav Tabs -->
+    <ul class="nav nav-tabs mb-3" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="dropdown-tab" data-bs-toggle="tab" data-bs-target="#dropdown" type="button" role="tab">
+                Dropdown Lists
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="model-settings-tab" data-bs-toggle="tab" data-bs-target="#model-settings" type="button" role="tab">
+                Model Performance Settings
+            </button>
+        </li>
+    </ul>
 
-                    <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}">
-                        <input type="hidden" name="list_type" value="categories">
-                        <div class="mb-2">
-                            <label for="category_type" class="form-label">Category Type:</label>
-                            <select name="category_type" id="category_type" class="form-select" required>
-                                <option value="" disabled selected>Select Type</option>
-                                <option value="text">Text</option>
-                                <option value="image">Image</option>
-                                <option value="file">File</option>
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <input type="text" name="new_value" class="form-control" placeholder="Add new category..." required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Add Category</button>
-                    </form>
-                </div>
-            </div>
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Dropdown Management Tab -->
+        <div class="tab-pane fade show active" id="dropdown" role="tabpanel">
+            {% include "admin_dropdowns.html" %}
         </div>
 
-        <!-- Project Management -->
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-light fw-bold">Projects</div>
-                <div class="card-body">
-                    <ul class="list-group mb-3">
-                        {% for project in projects %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ project }}
-                                <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}" class="m-0 p-0">
-                                    <input type="hidden" name="list_type" value="projects">
-                                    <input type="hidden" name="value_to_remove" value="{{ project }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </li>
-                        {% else %}
-                            <li class="list-group-item text-muted">No projects yet.</li>
+        <!-- Model Settings Tab -->
+        <div class="tab-pane fade" id="model-settings" role="tabpanel">
+            <form method="POST" action="{{ url_for('routes.save_model_settings') }}">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Model</th>
+                            <th>n_gpu_layers</th>
+                            <th>n_ctx</th>
+                            <th>n_threads</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for model in models %}
+                        <tr>
+                            <td>{{ model.path | basename }}</td>
+                            <td>
+                                <input type="range" name="n_gpu_layers_{{ loop.index0 }}" min="-1" max="100" value="{{ model.settings.n_gpu_layers or -1 }}" class="form-range" oninput="document.getElementById('gpu_val_{{ loop.index0 }}').textContent = this.value">
+                                <span id="gpu_val_{{ loop.index0 }}">{{ model.settings.n_gpu_layers or -1 }}</span>
+                            </td>
+                            <td>
+                                <input type="range" name="n_ctx_{{ loop.index0 }}" min="256" max="8192" step="256" value="{{ model.settings.n_ctx or 2048 }}" class="form-range" oninput="document.getElementById('ctx_val_{{ loop.index0 }}').textContent = this.value">
+                                <span id="ctx_val_{{ loop.index0 }}">{{ model.settings.n_ctx or 2048 }}</span>
+                            </td>
+                            <td>
+                                <input type="range" name="n_threads_{{ loop.index0 }}" min="1" max="32" value="{{ model.settings.n_threads or 8 }}" class="form-range" oninput="document.getElementById('threads_val_{{ loop.index0 }}').textContent = this.value">
+                                <span id="threads_val_{{ loop.index0 }}">{{ model.settings.n_threads or 8 }}</span>
+                            </td>
+                            <input type="hidden" name="model_path_{{ loop.index0 }}" value="{{ model.path }}">
+                        </tr>
                         {% endfor %}
-                    </ul>
-                    <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}">
-                        <input type="hidden" name="list_type" value="projects">
-                        <div class="mb-2">
-                            <input type="text" name="new_value" class="form-control" placeholder="Add new project..." required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Add Project</button>
-                    </form>
-                </div>
-            </div>
+                    </tbody>
+                </table>
+                <input type="hidden" name="total_models" value="{{ models|length }}">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </form>
         </div>
     </div>
 </div>

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Query All LLMs - AgentSI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Query All LLMs</h1>
+
+    <!-- Loading Spinner (hidden by default) -->
+    <div id="loadingSpinner" class="text-center d-none">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+        <div>Querying all models... please wait.</div>
+    </div>
+
+    <!-- Query Form -->
+    <form method="POST" id="queryAllForm" onsubmit="showSpinner()">
+        <div class="mb-3">
+            <label for="query" class="form-label">Enter a query to compare responses across all LLMs:</label>
+            <textarea class="form-control" id="query" name="query" rows="3" required>{{ query }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <!-- Tabs Navigation -->
+    {% if responses %}
+    <ul class="nav nav-tabs mt-4" id="llmTabs" role="tablist">
+        {% for model_name in responses.keys() %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if loop.first %}active{% endif %}" 
+                    id="tab-{{ loop.index0 }}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#content-{{ loop.index0 }}" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="content-{{ loop.index0 }}" 
+                    aria-selected="{{ 'true' if loop.first else 'false' }}">
+                {{ model_name }}
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Tabs Content -->
+    <div class="tab-content border p-3" id="llmTabContent">
+        {% for model_name, content in responses.items() %}
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+             id="content-{{ loop.index0 }}" 
+             role="tabpanel" 
+             aria-labelledby="tab-{{ loop.index0 }}">
+            <!-- Fixed Height Container with Vertical Scroll -->
+            <div style="max-height: 400px; overflow-y: auto; overflow-x: hidden; white-space: pre-wrap; word-wrap: break-word;">
+                {{ content }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Basic Script to Show Spinner on Submit -->
+<script>
+function showSpinner() {
+    // reveal the loading spinner
+    document.getElementById("loadingSpinner").classList.remove("d-none");
+}
+</script>
+{% endblock %}
