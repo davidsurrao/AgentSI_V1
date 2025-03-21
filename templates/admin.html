@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Manage Dropdowns{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Admin: Manage Dropdown Lists</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="row">
+        <!-- Category Management -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-light fw-bold">Categories by Type</div>
+                <div class="card-body">
+                    {% for type, cat_list in categories.items() %}
+                        <h6 class="text-muted">{{ type|capitalize }} Categories</h6>
+                        <ul class="list-group mb-3">
+                            {% for cat in cat_list %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ cat }}
+                                    <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}" class="m-0 p-0">
+                                        <input type="hidden" name="list_type" value="categories">
+                                        <input type="hidden" name="category_type" value="{{ type }}">
+                                        <input type="hidden" name="value_to_remove" value="{{ cat }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted">No categories found.</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+
+                    <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}">
+                        <input type="hidden" name="list_type" value="categories">
+                        <div class="mb-2">
+                            <label for="category_type" class="form-label">Category Type:</label>
+                            <select name="category_type" id="category_type" class="form-select" required>
+                                <option value="" disabled selected>Select Type</option>
+                                <option value="text">Text</option>
+                                <option value="image">Image</option>
+                                <option value="file">File</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="new_value" class="form-control" placeholder="Add new category..." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Add Category</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Management -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-light fw-bold">Projects</div>
+                <div class="card-body">
+                    <ul class="list-group mb-3">
+                        {% for project in projects %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ project }}
+                                <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}" class="m-0 p-0">
+                                    <input type="hidden" name="list_type" value="projects">
+                                    <input type="hidden" name="value_to_remove" value="{{ project }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="list-group-item text-muted">No projects yet.</li>
+                        {% endfor %}
+                    </ul>
+                    <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}">
+                        <input type="hidden" name="list_type" value="projects">
+                        <div class="mb-2">
+                            <input type="text" name="new_value" class="form-control" placeholder="Add new project..." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Add Project</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

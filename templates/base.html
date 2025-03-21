@@ -1,14 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AgentSI{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 </head>
 <body>
-    <header>
-        <h1>AgentSI</h1>
-    </header>
-    <main>
+
+    <!-- ✅ Fixed Navigation Bar (Forces Menu to True Top-Left) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid d-flex justify-content-start align-items-center">
+            <!-- AgentSI Brand -->
+            <a class="navbar-brand me-3" href="{{ url_for('routes.home') }}">AgentSI</a>
+
+            <!-- Menu Dropdown (Now properly aligned next to "AgentSI") -->
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="menuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menu
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="menuDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('routes.create_data') }}">Store Data</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('routes.query') }}">Query Data</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('routes.change_model') }}">Change Model</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('routes.admin') }}">Admin</a></li> <!-- ✅ NEW -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content (Header Appears on Every Page) -->
+    <main class="container mt-4">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
 </body>
 </html>

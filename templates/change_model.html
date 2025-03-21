@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Change LLM - AgentSI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Change LLM</h1>
+    <form method="POST" class="mb-3">
+        <div class="form-group">
+            <label for="model" class="form-label">Select LLM:</label>
+            <select name="model" id="model" class="form-select">
+                {% for model in models %}
+                <!-- Highlight the currently active model -->
+                <option value="{{ model }}" {% if model == active_model %}selected{% endif %}>
+                    {{ model }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Change</button>
+    </form>
+
+    <!-- Display Success Message -->
+    {% if message %}
+        <div class="alert alert-success mt-3">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <!-- Add LLM Summary Table -->
+    <h2 class="mt-5">LLM Summaries</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Model Name</th>
+                <th>Why It’s Suitable</th>
+                <th>Use Case Examples</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>mistral-7b-instruct-v0.2.Q4_K_M</td>
+                <td>A lightweight model with strong reasoning capabilities, suitable for structured documents and small code generation tasks.</td>
+                <td>Writing user stories, mapping simple workflows, and generating basic code snippets.</td>
+            </tr>
+            <tr>
+                <td>DeepSeek-R1-Distill-Qwen-7B-Q8_0</td>
+                <td>Fine-tuned for complex business tasks, with a focus on clear process descriptions and in-depth analysis.</td>
+                <td>Creating detailed process flows, producing technical requirement specifications, and drafting integration steps.</td>
+            </tr>
+            <tr>
+                <td>tiiuae-falcon-40b-instruct-Q6_K</td>
+                <td>A high-precision model that excels in following complex instructions and producing step-by-step guides.</td>
+                <td>Breaking down complex integration processes, generating detailed user requirements, and providing structured implementation plans.</td>
+            </tr>
+            <tr>
+                <td>qwen2.5-coder-32b-instruct-q8_0</td>
+                <td>Significantly improvements in code generation, code reasoning and code fixing.</td>
+                <td>A more comprehensive foundation for real-world applications such as Code Agents. Not only enhancing coding capabilities but also maintaining its strengths in mathematics and general competencies.</td>
+            </tr>
+            <tr>
+                <td>llama-2-7b.Q6_K</td>
+                <td>A balanced, general-purpose model offering strong natural language understanding and technical reasoning, ideal for Systems Integration tasks.</td>
+                <td>Translating technical processes into user stories, providing clear process explanations, and generating well-structured requirements.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

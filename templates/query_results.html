@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Query Data - AgentSI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Query Data</h1>
+    <p>Enter a search query to retrieve relevant stored data:</p>
+
+    <!-- Two-column layout -->
+    <div class="row">
+        <!-- Query Input (Left Column) -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Enter your Query</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('routes.query') }}">
+                        <div class="form-group">
+                            <!-- Retain user input after submitting -->
+                            <textarea
+                                name="query"
+                                id="queryInput"
+                                class="form-control"
+                                rows="10"
+                                placeholder="Enter search term..."
+                                required
+                            >{{ request.form.query if request.form.query else '' }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Display (Right Column) -->
+        <div class="col-md-6">
+            <!-- Display Error Message -->
+            {% if error %}
+                <div class="alert alert-warning">{{ error }}</div>
+            {% endif %}
+
+            <!-- Display Results -->
+            {% if results %}
+                <div class="card">
+                    <div class="card-header">Results</div>
+                    <div
+                        class="card-body"
+                        style="
+                            height: 600px;
+                            overflow-y: auto;
+                            white-space: pre-wrap;
+                        "
+                    >
+                        <ul class="list-group list-group-flush">
+                            {% for result in results %}
+                                <li class="list-group-item">
+                                    {{ result }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Display Active Model Message -->
+    {% if active_model %}
+        <div class="mt-4 alert alert-info">
+            You are using {{ active_model }}.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

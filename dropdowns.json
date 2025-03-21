@@ -1,0 +1,19 @@
+{
+  "categories": [
+    "general",
+    "requirements",
+    "process",
+    "notes",
+    "other",
+    "diagrams",
+    "screenshots",
+    "logos",
+    "technical_docs",
+    "project_docs",
+    "data_sources"
+  ],
+  "projects": [
+    "PHOCS",
+    "All"
+  ]
+}

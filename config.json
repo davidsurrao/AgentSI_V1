@@ -1,0 +1,29 @@
+{
+    "categories": {
+        "text": [
+            "general",
+            "requirements",
+            "process",
+            "notes",
+            "other"
+        ],
+        "image": [
+            "diagrams",
+            "screenshots",
+            "logos",
+            "other"
+        ],
+        "file": [
+            "technical_docs",
+            "project_docs",
+            "data_sources",
+            "other"
+        ]
+    },
+    "projects": [
+        "PHOCS",
+        "All",
+        "IMMS BC "
+    ],
+    "active_model": "C:\\Users\\david\\Documents\\AgentSI_V1\\models\\mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+}
