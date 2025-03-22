@@ -7,16 +7,16 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <!-- Bootstrap Icons (optional, not used in close button now) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
+
 <body>
 
-    <!-- ✅ Fixed Navigation Bar (Forces Menu to True Top-Left) -->
+    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid d-flex justify-content-start align-items-center">
-            <!-- AgentSI Brand -->
             <a class="navbar-brand me-3" href="{{ url_for('routes.home') }}">AgentSI</a>
-
-            <!-- Menu Dropdown (Now properly aligned next to "AgentSI") -->
             <div class="dropdown">
                 <button class="btn btn-light dropdown-toggle" type="button" id="menuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     Menu
@@ -25,20 +25,72 @@
                     <li><a class="dropdown-item" href="{{ url_for('routes.create_data') }}">Store Data</a></li>
                     <li><a class="dropdown-item" href="{{ url_for('routes.query') }}">Query Data</a></li>
                     <li><a class="dropdown-item" href="{{ url_for('routes.change_model') }}">Change Model</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('routes.query_all_llms') }}">Query All LLMs</a></li> <!-- ✅ New Link -->
+                    <li><a class="dropdown-item" href="{{ url_for('routes.query_all_llms') }}">Query All LLMs</a></li>
                     <li><a class="dropdown-item" href="{{ url_for('routes.admin') }}">Admin</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content (Header Appears on Every Page) -->
+    <!-- Main Content -->
     <main class="container mt-4">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Help Modals (Placed before Bootstrap JS) -->
+    <div class="modal fade" id="helpGpuLayers" tabindex="-1" aria-labelledby="helpGpuLayersLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title" id="helpGpuLayersLabel">Help: n_gpu_layers</h5>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" aria-label="Close">✖</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>n_gpu_layers</strong> defines how many layers of the model are loaded onto the GPU for faster processing.</p>
+                    <ul>
+                        <li><strong>-1</strong> = All layers on GPU (fastest, uses most memory)</li>
+                        <li><strong>0</strong> = All layers on CPU (slower)</li>
+                        <li><strong>1–100</strong> = Partial GPU offloading</li>
+                    </ul>
+                    <p>⚡ Higher GPU layers = faster inference, but needs more VRAM.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="helpCtx" tabindex="-1" aria-labelledby="helpCtxLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title" id="helpCtxLabel">Help: n_ctx</h5>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" aria-label="Close">✖</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>n_ctx</strong> is the size of the context window (how much text the model can consider at once).</p>
+                    <p>Higher values allow for longer conversations or document analysis but require more memory.</p>
+                    <p>💡 Default: <strong>2048</strong>. Use up to <strong>8192</strong> for larger prompts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="helpThreads" tabindex="-1" aria-labelledby="helpThreadsLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title" id="helpThreadsLabel">Help: n_threads</h5>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" aria-label="Close">✖</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>n_threads</strong> controls how many CPU threads are used during model inference.</p>
+                    <p>Set it to match your physical or logical core count for best performance.</p>
+                    <p>🛠 Example: <strong>16</strong> for a 16-core CPU or <strong>32</strong> for 32 threads.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript (Moved to bottom) -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

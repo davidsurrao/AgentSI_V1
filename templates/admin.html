@@ -30,7 +30,9 @@
     <div class="tab-content" id="adminTabsContent">
         <!-- Dropdown Management Tab -->
         <div class="tab-pane fade show active" id="dropdown" role="tabpanel">
-            {% include "admin_dropdowns.html" %}
+            <div class="p-3 border rounded" style="background-color: #f8f9fa;">
+                {% include "admin_dropdowns.html" %}
+            </div>
         </div>
 
         <!-- Model Settings Tab -->
@@ -40,9 +42,24 @@
                     <thead class="table-light">
                         <tr>
                             <th>Model</th>
-                            <th>n_gpu_layers</th>
-                            <th>n_ctx</th>
-                            <th>n_threads</th>
+                            <th>
+                                n_gpu_layers
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#helpGpuLayers">
+                                    <i class="bi bi-question-circle-fill text-secondary"></i>
+                                </a>
+                            </th>
+                            <th>
+                                n_ctx
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#helpCtx">
+                                    <i class="bi bi-question-circle-fill text-secondary"></i>
+                                </a>
+                            </th>
+                            <th>
+                                n_threads
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#helpThreads">
+                                    <i class="bi bi-question-circle-fill text-secondary"></i>
+                                </a>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,15 +67,21 @@
                         <tr>
                             <td>{{ model.path | basename }}</td>
                             <td>
-                                <input type="range" name="n_gpu_layers_{{ loop.index0 }}" min="-1" max="100" value="{{ model.settings.n_gpu_layers or -1 }}" class="form-range" oninput="document.getElementById('gpu_val_{{ loop.index0 }}').textContent = this.value">
+                                <input type="range" name="n_gpu_layers_{{ loop.index0 }}" min="-1" max="100"
+                                    value="{{ model.settings.n_gpu_layers or -1 }}" class="form-range"
+                                    oninput="document.getElementById('gpu_val_{{ loop.index0 }}').textContent = this.value">
                                 <span id="gpu_val_{{ loop.index0 }}">{{ model.settings.n_gpu_layers or -1 }}</span>
                             </td>
                             <td>
-                                <input type="range" name="n_ctx_{{ loop.index0 }}" min="256" max="8192" step="256" value="{{ model.settings.n_ctx or 2048 }}" class="form-range" oninput="document.getElementById('ctx_val_{{ loop.index0 }}').textContent = this.value">
+                                <input type="range" name="n_ctx_{{ loop.index0 }}" min="256" max="8192" step="256"
+                                    value="{{ model.settings.n_ctx or 2048 }}" class="form-range"
+                                    oninput="document.getElementById('ctx_val_{{ loop.index0 }}').textContent = this.value">
                                 <span id="ctx_val_{{ loop.index0 }}">{{ model.settings.n_ctx or 2048 }}</span>
                             </td>
                             <td>
-                                <input type="range" name="n_threads_{{ loop.index0 }}" min="1" max="32" value="{{ model.settings.n_threads or 8 }}" class="form-range" oninput="document.getElementById('threads_val_{{ loop.index0 }}').textContent = this.value">
+                                <input type="range" name="n_threads_{{ loop.index0 }}" min="1" max="32"
+                                    value="{{ model.settings.n_threads or 8 }}" class="form-range"
+                                    oninput="document.getElementById('threads_val_{{ loop.index0 }}').textContent = this.value">
                                 <span id="threads_val_{{ loop.index0 }}">{{ model.settings.n_threads or 8 }}</span>
                             </td>
                             <input type="hidden" name="model_path_{{ loop.index0 }}" value="{{ model.path }}">
@@ -69,6 +92,50 @@
                 <input type="hidden" name="total_models" value="{{ models|length }}">
                 <button type="submit" class="btn btn-success">Save Changes</button>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Modals -->
+<div class="modal fade" id="helpGpuLayers" tabindex="-1" aria-labelledby="gpuHelpLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title" id="gpuHelpLabel">n_gpu_layers</h5></div>
+            <div class="modal-body">
+                <p>This setting controls how many layers of the model to offload to your GPU.</p>
+                <ul>
+                    <li><strong>-1</strong> — Use GPU for all layers (recommended if you have enough memory).</li>
+                    <li><strong>0</strong> — Use CPU only (slower).</li>
+                    <li><strong>1-100</strong> — Partially offload layers to GPU.</li>
+                </ul>
+                <p>⚡ More GPU layers = faster performance, but requires more VRAM.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="helpCtx" tabindex="-1" aria-labelledby="ctxHelpLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title" id="ctxHelpLabel">n_ctx</h5></div>
+            <div class="modal-body">
+                <p>This defines how much text the model can "see" or remember at once (context window).</p>
+                <p>Larger context sizes allow for longer inputs but consume more memory and can slow down response time.</p>
+                <p>💡 Default: <strong>2048</strong>. You can increase to 4096 or 8192 for bigger documents.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="helpThreads" tabindex="-1" aria-labelledby="threadsHelpLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title" id="threadsHelpLabel">n_threads</h5></div>
+            <div class="modal-body">
+                <p>This is the number of CPU threads used during model inference.</p>
+                <p>Higher values can improve performance, especially on multi-core CPUs. Match it to your physical cores or threads (e.g., 16 or 32).</p>
+                <p>⚙️ Default: <strong>8</strong>. You can adjust based on your system's performance.</p>
+            </div>
         </div>
     </div>
 </div>

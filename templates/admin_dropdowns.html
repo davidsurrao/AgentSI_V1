@@ -1,68 +1,70 @@
-<!-- Partials: admin_dropdowns.html -->
 <div class="accordion" id="adminAccordion">
-    {% for type, label in {'text': 'Text', 'image': 'Image', 'file': 'File'}.items() %}
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ type }}Cat">
-            <button class="accordion-button collapsed"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ type }}Cat"
-                    aria-expanded="false" aria-controls="collapse{{ type }}Cat"
-                    style="background-color: #f1f1f1; font-weight: bold; color: #333;">
-                {{ label }} Categories
-            </button>
-        </h2>
-        <div id="collapse{{ type }}Cat" class="accordion-collapse collapse" aria-labelledby="heading{{ type }}Cat" data-bs-parent="#adminAccordion">
-            <div class="accordion-body">
-                {% for cat in categories.get(type, []) %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ cat }}
-                        <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}?open=collapse{{ type|capitalize }}Cat" class="m-0 p-0">
-                            <input type="hidden" name="list_type" value="categories">
-                            <input type="hidden" name="category_type" value="{{ type }}">
-                            <input type="hidden" name="value_to_remove" value="{{ cat }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li class="list-group-item text-muted">No {{ label.lower() }} categories found.</li>
-                {% endfor %}
-                <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}?open=collapse{{ type|capitalize }}Cat" class="mt-3">
-                    <input type="hidden" name="list_type" value="categories">
-                    <input type="hidden" name="category_type" value="{{ type }}">
-                    <div class="mb-2">
-                        <input type="text" name="new_value" class="form-control" placeholder="Add new {{ label.lower() }} category..." required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-sm">Add {{ label }} Category</button>
-                </form>
+    {% for category_type, values in categories.items() %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-{{ category_type }}">
+                <button class="accordion-button collapsed"
+                        type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse-{{ category_type }}"
+                        aria-expanded="false" aria-controls="collapse-{{ category_type }}"
+                        style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+                    {{ category_type.capitalize() }} Categories
+                </button>
+            </h2>
+            <div id="collapse-{{ category_type }}" class="accordion-collapse collapse"
+                 aria-labelledby="heading-{{ category_type }}" data-bs-parent="#adminAccordion">
+                <div class="accordion-body">
+                    {% for value in values %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ value }}
+                            <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}?open=collapse-{{ category_type }}" class="m-0 p-0">
+                                <input type="hidden" name="list_type" value="categories">
+                                <input type="hidden" name="category_type" value="{{ category_type }}">
+                                <input type="hidden" name="value_to_remove" value="{{ value }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="list-group-item text-muted">No {{ category_type }} categories found.</li>
+                    {% endfor %}
+                    <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}?open=collapse-{{ category_type }}" class="mt-3">
+                        <input type="hidden" name="list_type" value="categories">
+                        <input type="hidden" name="category_type" value="{{ category_type }}">
+                        <div class="mb-2">
+                            <input type="text" name="new_value" class="form-control" placeholder="Add new {{ category_type }} category..." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Add {{ category_type }} Category</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     {% endfor %}
 
-    <!-- Projects -->
+    <!-- Projects Section -->
     <div class="accordion-item">
-        <h2 class="accordion-header" id="headingProjects">
+        <h2 class="accordion-header" id="heading-projects">
             <button class="accordion-button collapsed"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseProjects"
-                    aria-expanded="false" aria-controls="collapseProjects"
+                    type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapse-projects"
+                    aria-expanded="false" aria-controls="collapse-projects"
                     style="background-color: #f1f1f1; font-weight: bold; color: #333;">
                 Projects
             </button>
         </h2>
-        <div id="collapseProjects" class="accordion-collapse collapse" aria-labelledby="headingProjects" data-bs-parent="#adminAccordion">
+        <div id="collapse-projects" class="accordion-collapse collapse" aria-labelledby="heading-projects" data-bs-parent="#adminAccordion">
             <div class="accordion-body">
                 {% for project in projects %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         {{ project }}
-                        <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}?open=collapseProjects" class="m-0 p-0">
+                        <form method="POST" action="{{ url_for('routes.delete_dropdown_value') }}?open=collapse-projects" class="m-0 p-0">
                             <input type="hidden" name="list_type" value="projects">
                             <input type="hidden" name="value_to_remove" value="{{ project }}">
                             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                         </form>
                     </li>
                 {% else %}
-                    <li class="list-group-item text-muted">No projects yet.</li>
+                    <li class="list-group-item text-muted">No projects found.</li>
                 {% endfor %}
-                <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}?open=collapseProjects" class="mt-3">
+                <form method="POST" action="{{ url_for('routes.add_dropdown_value') }}?open=collapse-projects" class="mt-3">
                     <input type="hidden" name="list_type" value="projects">
                     <div class="mb-2">
                         <input type="text" name="new_value" class="form-control" placeholder="Add new project..." required>
