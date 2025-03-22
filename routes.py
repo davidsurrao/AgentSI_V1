@@ -1,10 +1,10 @@
-from flask import Blueprint, request, render_template, send_from_directory, redirect, url_for, flash
+from flask import Blueprint, request, render_template, send_from_directory, redirect, url_for, flash, session
 import os
 import json
 import requests
 import time
 from werkzeug.utils import secure_filename
-from models import store_text, query_text, get_active_model
+from models import store_text, query_text, get_active_model, list_stored_entries
 from utils.ocr import extract_text
 import ntpath
 
@@ -43,15 +43,22 @@ def static_files(filename):
 def home():
     return render_template("index.html")
 
-# --- Store Data ---
-@routes.route("/create_data")
-def create_data():
+# --- Manage Knowledge Base ---
+@routes.route("/manage_knowledge")
+def manage_knowledge():
     open_section = request.args.get("open", "")
     config = load_config()
-    return render_template("create_data.html",
+    entries = list_stored_entries()
+
+    return render_template("manage_knowledge_base.html",
                            open_section=open_section,
                            categories=config.get("categories", {}),
-                           projects=config.get("projects", []))
+                           projects=config.get("projects", []),
+                           records=entries)
+
+
+
+
 
 @routes.route("/upload_text", methods=["POST"])
 def upload_text():
@@ -59,15 +66,25 @@ def upload_text():
     category = request.form.get('textCategory')
     project = request.form.get('textProject')
 
+    # Save values to session
+    session['stored_text'] = text
+    session['stored_category'] = category
+    session['stored_project'] = project
+
     if not text or not category or not project:
         flash("Please complete all fields to store text.", "danger")
-        return redirect(url_for('routes.create_data', open='collapseText'))
+        return redirect(url_for('routes.manage_knowledge', open='collapseText'))
 
     metadata = {"category": category, "project": project}
     store_text(text, metadata)
 
+    # Clear session after successful upload
+    session.pop('stored_text', None)
+    session.pop('stored_category', None)
+    session.pop('stored_project', None)
+
     flash("Text uploaded successfully.", "success")
-    return redirect(url_for('routes.create_data', open='collapseText'))
+    return redirect(url_for('routes.manage_knowledge', open='collapseText'))
 
 @routes.route("/upload_image", methods=["POST"])
 def upload_image():
@@ -75,9 +92,12 @@ def upload_image():
     category = request.form.get('imageCategory')
     project = request.form.get('imageProject')
 
+    session['stored_category'] = category
+    session['stored_project'] = project
+
     if not image or image.filename == '' or not category or not project:
         flash("Please complete all fields and select an image.", "danger")
-        return redirect(url_for('routes.create_data', open='collapseImage'))
+        return redirect(url_for('routes.manage_knowledge', open='collapseImage'))
 
     if allowed_file(image.filename):
         filename = secure_filename(image.filename)
@@ -88,11 +108,15 @@ def upload_image():
         metadata = {"category": category, "project": project, "filename": filename, "filepath": file_path}
         store_text(content, metadata)
 
+        session.pop('stored_category', None)
+        session.pop('stored_project', None)
+
         flash("Image uploaded successfully.", "success")
-        return redirect(url_for('routes.create_data', open='collapseImage'))
+        return redirect(url_for('routes.manage_knowledge', open='collapseImage'))
 
     flash("Invalid image file type.", "danger")
-    return redirect(url_for('routes.create_data', open='collapseImage'))
+    return redirect(url_for('routes.manage_knowledge', open='collapseImage'))
+
 
 @routes.route("/upload_file", methods=["POST"])
 def upload_file():
@@ -100,9 +124,12 @@ def upload_file():
     category = request.form.get('fileCategory')
     project = request.form.get('fileProject')
 
+    session['stored_category'] = category
+    session['stored_project'] = project
+
     if not file or file.filename == '' or not category or not project:
         flash("Please complete all fields and select a file.", "danger")
-        return redirect(url_for('routes.create_data', open='collapseFile'))
+        return redirect(url_for('routes.manage_knowledge', open='collapseFile'))
 
     if allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -118,11 +145,14 @@ def upload_file():
         metadata = {"category": category, "project": project, "filename": filename, "filepath": file_path}
         store_text(content, metadata)
 
+        session.pop('stored_category', None)
+        session.pop('stored_project', None)
+
         flash("File uploaded successfully.", "success")
-        return redirect(url_for('routes.create_data', open='collapseFile'))
+        return redirect(url_for('routes.manage_knowledge', open='collapseFile'))
 
     flash("Invalid file type.", "danger")
-    return redirect(url_for('routes.create_data', open='collapseFile'))
+    return redirect(url_for('routes.manage_knowledge', open='collapseFile'))
 
 # --- Query Data ---
 @routes.route("/query", methods=["GET", "POST"])
@@ -291,3 +321,15 @@ def save_model_settings():
     save_config(config)
     flash("Model performance settings saved.", "success")
     return redirect(url_for("routes.admin"))
+
+@routes.route("/delete_entry/<entry_id>", methods=["POST"])
+def delete_entry(entry_id):
+    try:
+        from models import vector_store
+        vector_store.delete([entry_id])
+        vector_store.persist()
+        flash("Entry deleted successfully.", "success")
+    except Exception as e:
+        flash(f"Failed to delete entry: {str(e)}", "danger")
+    return redirect(url_for("routes.manage_knowledge"))
+

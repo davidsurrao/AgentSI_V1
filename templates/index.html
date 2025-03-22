@@ -3,16 +3,12 @@
 {% block title %}Home - AgentSI{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center vh-100">
+<div class="d-flex justify-content-center mt-5">
     <div class="text-center p-5 rounded shadow" style="background-color: #f8f9fa; max-width: 600px;">
         <h1 class="display-4 fw-bold">Welcome to <span class="text-primary">AgentSI</span></h1>
         <p class="lead text-muted">
             Your System Integration Assistant is here! Use the menu above to navigate to:
         </p>
-        <div class="d-flex flex-column gap-3 mt-4">
-            <a href="{{ url_for('routes.create_data') }}" class="btn btn-outline-primary btn-lg">➕ Store Data</a>
-            <a href="{{ url_for('routes.query') }}" class="btn btn-outline-primary btn-lg">🔍 Query Data</a>
-        </div>
     </div>
 </div>
 {% endblock %}

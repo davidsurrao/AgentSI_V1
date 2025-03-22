@@ -1,0 +1,153 @@
+<!-- Text Entry Section -->
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingText">
+        <button class="accordion-button {% if open_section != 'collapseText' %}collapsed{% endif %}"
+                type="button" data-bs-toggle="collapse" data-bs-target="#collapseText"
+                aria-expanded="{{ 'true' if open_section == 'collapseText' else 'false' }}"
+                aria-controls="collapseText"
+                style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+            Store Text
+        </button>
+    </h2>
+    <div id="collapseText"
+         class="accordion-collapse collapse {% if open_section == 'collapseText' %}show{% endif %}"
+         aria-labelledby="headingText" data-bs-parent="#storeDataAccordion">
+        <div class="accordion-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages if open_section == 'collapseText' %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+            <form action="{{ url_for('routes.upload_text') }}" method="POST">
+                <div class="mb-3">
+                    <label for="textInput" class="form-label">Enter Text:</label>
+                    <textarea class="form-control" id="textInput" name="textInput" rows="4">{{ session.get("stored_text", "") }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="textCategory" class="form-label">Category:</label>
+                    <select id="textCategory" name="textCategory" class="form-select">
+                        {% set selected_category = session.get("stored_category", "") %}
+                        <option value="" {% if not selected_category %}selected{% endif %}>Select Category</option>
+                        {% for cat in categories.text %}
+                            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="textProject" class="form-label">Project:</label>
+                    <select id="textProject" name="textProject" class="form-select">
+                        {% set selected_project = session.get("stored_project", "") %}
+                        <option value="" {% if not selected_project %}selected{% endif %}>Select Project</option>
+                        {% for proj in projects %}
+                            <option value="{{ proj }}" {% if proj == selected_project %}selected{% endif %}>{{ proj }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Store Text</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Image Upload Section -->
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingImage">
+        <button class="accordion-button {% if open_section != 'collapseImage' %}collapsed{% endif %}"
+                type="button" data-bs-toggle="collapse" data-bs-target="#collapseImage"
+                aria-expanded="{{ 'true' if open_section == 'collapseImage' else 'false' }}"
+                aria-controls="collapseImage"
+                style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+            Upload Image
+        </button>
+    </h2>
+    <div id="collapseImage"
+         class="accordion-collapse collapse {% if open_section == 'collapseImage' %}show{% endif %}"
+         aria-labelledby="headingImage" data-bs-parent="#storeDataAccordion">
+        <div class="accordion-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages if open_section == 'collapseImage' %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+            <form action="{{ url_for('routes.upload_image') }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="imageInput" class="form-label">Choose Image:</label>
+                    <input type="file" class="form-control" id="imageInput" name="imageInput" accept="image/*">
+                </div>
+                <div class="mb-3">
+                    <label for="imageCategory" class="form-label">Category:</label>
+                    <select id="imageCategory" name="imageCategory" class="form-select">
+                        {% set selected_category = session.get("stored_category", "") %}
+                        <option value="" {% if not selected_category %}selected{% endif %}>Select Category</option>
+                        {% for cat in categories.image %}
+                            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="imageProject" class="form-label">Project:</label>
+                    <select id="imageProject" name="imageProject" class="form-select">
+                        {% set selected_project = session.get("stored_project", "") %}
+                        <option value="" {% if not selected_project %}selected{% endif %}>Select Project</option>
+                        {% for proj in projects %}
+                            <option value="{{ proj }}" {% if proj == selected_project %}selected{% endif %}>{{ proj }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Upload Image</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- File Upload Section -->
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingFile">
+        <button class="accordion-button {% if open_section != 'collapseFile' %}collapsed{% endif %}"
+                type="button" data-bs-toggle="collapse" data-bs-target="#collapseFile"
+                aria-expanded="{{ 'true' if open_section == 'collapseFile' else 'false' }}"
+                aria-controls="collapseFile"
+                style="background-color: #f1f1f1; font-weight: bold; color: #333;">
+            Upload File
+        </button>
+    </h2>
+    <div id="collapseFile"
+         class="accordion-collapse collapse {% if open_section == 'collapseFile' %}show{% endif %}"
+         aria-labelledby="headingFile" data-bs-parent="#storeDataAccordion">
+        <div class="accordion-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages if open_section == 'collapseFile' %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+            <form action="{{ url_for('routes.upload_file') }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="fileInput" class="form-label">Choose File:</label>
+                    <input type="file" class="form-control" id="fileInput" name="fileInput"
+                           accept=".txt,.csv,.json,.pdf,.docx,.html,.md,.xlsx,.pptx,.xml,.yaml">
+                </div>
+                <div class="mb-3">
+                    <label for="fileCategory" class="form-label">Category:</label>
+                    <select id="fileCategory" name="fileCategory" class="form-select">
+                        {% set selected_category = session.get("stored_category", "") %}
+                        <option value="" {% if not selected_category %}selected{% endif %}>Select Category</option>
+                        {% for cat in categories.file %}
+                            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="fileProject" class="form-label">Project:</label>
+                    <select id="fileProject" name="fileProject" class="form-select">
+                        {% set selected_project = session.get("stored_project", "") %}
+                        <option value="" {% if not selected_project %}selected{% endif %}>Select Project</option>
+                        {% for proj in projects %}
+                            <option value="{{ proj }}" {% if proj == selected_project %}selected{% endif %}>{{ proj }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary">Upload File</button>
+            </form>
+        </div>
+    </div>
+</div>

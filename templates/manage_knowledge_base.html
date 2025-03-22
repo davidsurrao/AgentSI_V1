@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Knowledge Base - AgentSI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Manage Knowledge Base</h1>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="knowledgeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="store-tab" data-bs-toggle="tab" data-bs-target="#store-tab-pane" type="button" role="tab" aria-controls="store-tab-pane" aria-selected="true">
+                Store Knowledge
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage-tab-pane" type="button" role="tab" aria-controls="manage-tab-pane" aria-selected="false">
+                Manage Knowledge
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="knowledgeTabsContent">
+        <!-- Tab 1: Store Knowledge -->
+        <div class="tab-pane fade show active" id="store-tab-pane" role="tabpanel" aria-labelledby="store-tab" tabindex="0">
+            {% set open_section = request.args.get('open', '') %}
+            <div class="accordion" id="storeDataAccordion">
+                {% include "store_accordion.html" %}
+            </div>
+        </div>
+
+        <!-- Tab 2: Manage Knowledge -->
+        <div class="tab-pane fade" id="manage-tab-pane" role="tabpanel" aria-labelledby="manage-tab" tabindex="0">
+            <div class="table-responsive mt-4">
+                {% if records and records|length > 0 %}
+                <table class="table table-bordered table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Type</th>
+                            <th>Filename</th>
+                            <th>Category</th>
+                            <th>Project</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td>{{ record.type }}</td>
+                            <td>{{ record.filename }}</td>
+                            <td>{{ record.category }}</td>
+                            <td>{{ record.project }}</td>
+                            <td>
+                                <a href="#" class="text-primary text-decoration-underline me-2" data-bs-toggle="modal" data-bs-target="#viewModal-{{ record.id }}">View</a>
+{% if record.id is defined and record.id %}
+  {% set delete_url = url_for('routes.delete_entry', entry_id=record.id) %}
+  <form action="{{ delete_url }}" method="POST" style="display:inline;">
+    <button type="submit" class="btn btn-link p-0 text-danger text-decoration-underline">Delete</button>
+  </form>
+{% else %}
+  <span class="text-muted">No ID</span>
+{% endif %}
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% for record in records %}
+                <div class="modal fade" id="viewModal-{{ record.id }}" tabindex="-1" aria-labelledby="viewModalLabel-{{ record.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="viewModalLabel-{{ record.id }}">Viewing: {{ record.filename }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <pre style="white-space: pre-wrap;">{{ record.text }}</pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+
+                {% else %}
+                <div class="alert alert-warning">No knowledge entries found.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

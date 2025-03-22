@@ -36,6 +36,22 @@ def store_text(text: str, metadata: dict = None):
     vector_store.add_texts([text], metadatas=[metadata] if metadata else None)
     vector_store.persist()
 
+def list_stored_entries():
+    """Returns all stored entries with ID, metadata, and text from ChromaDB."""
+    results = vector_store._collection.get(include=["metadatas", "documents"])
+    entries = []
+    for doc_id, metadata, content in zip(results["ids"], results["metadatas"], results["documents"]):
+        entries.append({
+            "id": doc_id,
+            "filename": metadata.get("filename", ""),
+            "category": metadata.get("category", ""),
+            "project": metadata.get("project", ""),
+            "type": metadata.get("type", "text"),
+            "text": content
+        })
+    return entries
+
+
 def query_llm(prompt: str):
     """Queries the currently active model."""
     model_path = get_active_model()
